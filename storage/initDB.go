@@ -15,11 +15,12 @@ func (db *Database) InitSchema() {
 	defer fileConfigRequest.Close()
 	schemaRequestByte, err := io.ReadAll(fileConfigRequest)
 	if err != nil {
-		log.Error().Msg(err.Error())
+		log.Fatal().Msg(err.Error())
 	}
 	shemaRequest := string(schemaRequestByte)
 	_, err = db.tunnel.Query(shemaRequest)
 	if err != nil {
-		log.Error().Msg(err.Error())
+		log.Fatal().Msg(err.Error())
 	}
+	log.Info().Msg("connected to database at " + db.Url)
 }

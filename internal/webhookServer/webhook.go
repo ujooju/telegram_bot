@@ -1,33 +1,69 @@
-package webhookserver
+package webhookServer
 
 import (
-	"log"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
 	"os"
+
+	"github.com/rs/zerolog/log"
 )
 
 type Webhook struct {
-	url string
-}
-
-func (webhook *Webhook) Start() {
-
+	Url   string
+	Token string
 }
 
 type WebhookParams struct {
-	url string
+	Url string `json:"url"`
 }
 
-func startWebhook() {
+func (webhook *Webhook) Start() {
+	params := WebhookParams{
+		Url: webhook.Url,
+	}
+	paramsEncoded, err := json.Marshal(params)
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+	fmt.Println(webhook.Token)
+	resp, err := http.Post("http://api.telegram.org/bot"+webhook.Token+"/setWebhook", "application/json", bytes.NewReader(paramsEncoded))
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+	defer resp.Body.Close()
+	respContent, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+	fmt.Println(string(respContent))
 
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", handler)
+
+	go http.ListenAndServe("https:80", mux)
+
+	log.Info().Msg("webhook started")
 }
 
-func newWebhook() *Webhook {
+func NewWebhook(token string) *Webhook {
 	url := os.Getenv("WEBHOOK_URL")
 	if url == "" {
-		log.Fatal("check that WEBHOOK_URL is set")
+		log.Fatal().Msg("check if WEBHOOK_URL is set")
 	}
 	webhook := &Webhook{
-		url: url,
+		Url:   url,
+		Token: token,
 	}
 	return webhook
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	requestContent, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+	log.Debug().Msg(string(requestContent))
 }
