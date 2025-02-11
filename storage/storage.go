@@ -9,25 +9,26 @@ import (
 )
 
 type Database struct {
-	url    string
+	Url    string
 	tunnel *sqlx.DB
 }
 
-func newDatabase() *Database {
+func NewDatabase() *Database {
 	databaseURL := os.Getenv("STORAGE_URL")
 	if databaseURL == "" {
-		log.Fatal().Msg("chech if STORAGE_URL is set")
+		log.Error().Msg("check if STORAGE_URL is set")
 	}
 	return &Database{
-		url: databaseURL,
+		Url: databaseURL,
 	}
 }
 
-func (db *Database) startDatabase() error {
+func (db *Database) StartDatabase() error {
 	var err error
-	db.tunnel, err = sqlx.Connect("pgx", db.url)
+	db.tunnel, err = sqlx.Connect("pgx", db.Url)
 	if err != nil {
 		return err
 	}
+	db.InitSchema()
 	return nil
 }

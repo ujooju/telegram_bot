@@ -7,14 +7,19 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func initDB() {
-	fileConfigRequest, err := os.Open("config/request.txt")
+func (db *Database) InitSchema() {
+	fileConfigRequest, err := os.Open("config/storage/schema.txt")
 	if err != nil {
-		log.Error().Err(err)
+		log.Fatal().Msg(err.Error())
 	}
-	configRequest, err := io.ReadAll(fileConfigRequest)
+	defer fileConfigRequest.Close()
+	schemaRequestByte, err := io.ReadAll(fileConfigRequest)
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Msg(err.Error())
 	}
-
+	shemaRequest := string(schemaRequestByte)
+	_, err = db.tunnel.Query(shemaRequest)
+	if err != nil {
+		log.Error().Msg(err.Error())
+	}
 }

@@ -5,20 +5,28 @@ import (
 	"os"
 )
 
-type WebHook struct {
+type Webhook struct {
 	url string
 }
 
-func startWebHook {
-	
+func (webhook *Webhook) Start() {
+
 }
 
-func newWebHook() *WebHook {
+type WebhookParams struct {
+	url string
+}
+
+func startWebhook() {
+
+}
+
+func newWebhook() *Webhook {
 	url := os.Getenv("WEBHOOK_URL")
 	if url == "" {
 		log.Fatal("check that WEBHOOK_URL is set")
 	}
-	webhook := &WebHook{
+	webhook := &Webhook{
 		url: url,
 	}
 	return webhook
