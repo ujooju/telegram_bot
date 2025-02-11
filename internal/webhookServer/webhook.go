@@ -29,7 +29,7 @@ func (webhook *Webhook) Start() {
 		log.Fatal().Msg(err.Error())
 	}
 	fmt.Println(webhook.Token)
-	resp, err := http.Post("http://api.telegram.org/bot"+webhook.Token+"/setWebhook", "application/json", bytes.NewReader(paramsEncoded))
+	resp, err := http.Post("https://api.telegram.org/bot"+webhook.Token+"/setWebhook", "application/json", bytes.NewReader(paramsEncoded))
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
@@ -43,7 +43,7 @@ func (webhook *Webhook) Start() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
 
-	go http.ListenAndServe("https://81.177.217.179:80", mux)
+	go http.ListenAndServe("http://81.177.217.179:80", mux)
 
 	log.Info().Msg("webhook started")
 }
@@ -61,6 +61,7 @@ func NewWebhook(token string) *Webhook {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+	log.Info().Msg("incoming request")
 	requestContent, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal().Msg(err.Error())
