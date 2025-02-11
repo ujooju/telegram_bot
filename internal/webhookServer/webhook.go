@@ -43,7 +43,7 @@ func (webhook *Webhook) Start() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
 
-	go http.ListenAndServe("http://81.177.217.179:80", mux)
+	http.ListenAndServe("http://81.177.217.179:80", mux)
 
 	log.Info().Msg("webhook started")
 }
