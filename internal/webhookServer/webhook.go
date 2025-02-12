@@ -68,4 +68,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal().Msg(err.Error())
 	}
 	log.Debug().Msg(string(requestContent))
+	w.Write([]byte("hi"))
 }
