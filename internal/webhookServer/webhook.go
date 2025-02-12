@@ -44,7 +44,7 @@ func (webhook *Webhook) Start() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
 
-	go http.Serve(autocert.NewListener("81.177.217.179"), mux)
+	go http.Serve(autocert.NewListener("https://81.177.217.179:443"), mux)
 
 	log.Info().Msg("webhook started")
 }
