@@ -43,7 +43,7 @@ func (webhook *Webhook) Start() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
 
-	http.ListenAndServeTLS(":443", "cert.pem", "private.pem", mux)
+	http.ListenAndServeTLS(":80", "cert.pem", "private.pem", mux)
 
 	log.Info().Msg("webhook started")
 }
