@@ -27,8 +27,8 @@ func (webhook *Webhook) Start() {
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
-	keyFile.Close()
 	keyInBytes, err := io.ReadAll(keyFile)
+	keyFile.Close()
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
