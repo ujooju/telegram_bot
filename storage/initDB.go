@@ -8,7 +8,7 @@ import (
 )
 
 func (db *Database) InitSchema() {
-	fileConfigRequest, err := os.Open("config/storage/schema.txt")
+	fileConfigRequest, err := os.Open("/config/storage/schema.txt")
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}

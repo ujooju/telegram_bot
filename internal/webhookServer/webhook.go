@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/rs/zerolog/log"
-	"golang.org/x/crypto/acme/autocert"
 )
 
 type Webhook struct {
@@ -44,7 +43,7 @@ func (webhook *Webhook) Start() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
 
-	go http.Serve(autocert.NewListener("81.177.217.179"), mux)
+	http.ListenAndServeTLS(":443", "cert.pem", "private.pem", mux)
 
 	log.Info().Msg("webhook started")
 }
