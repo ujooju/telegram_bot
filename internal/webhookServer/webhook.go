@@ -19,12 +19,26 @@ type Webhook struct {
 }
 
 type WebhookParams struct {
-	Url string `json:"url"`
+	Url         string `json:"url"`
+	Certificate string `json:"certificate"`
 }
 
 func (webhook *Webhook) Start() {
+
+	keyFile, err := os.Open("key.pem")
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+	keyInBytes, err := io.ReadAll(keyFile)
+	keyFile.Close()
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+	keyContent := string(keyInBytes)
+
 	params := WebhookParams{
-		Url: webhook.Url,
+		Url:         webhook.Url,
+		Certificate: keyContent,
 	}
 	paramsEncoded, err := json.Marshal(params)
 	if err != nil {
