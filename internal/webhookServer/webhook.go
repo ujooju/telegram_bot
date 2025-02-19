@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 
 	"github.com/rs/zerolog/log"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 type Webhook struct {
@@ -43,10 +45,7 @@ func (webhook *Webhook) Start() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
 
-	err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", mux)
-	if err != nil {
-		log.Fatal().Msg(err.Error())
-	}
+	http.Serve(autocert.NewListener("tyomik.ru"), mux)
 
 	log.Info().Msg("webhook started")
 }
@@ -71,4 +70,24 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Debug().Msg(string(requestContent))
 	w.Write([]byte("hi"))
+}
+
+func (webhook *Webhook) PrepareSetWebhookRequestBody() {
+	buf := new(bytes.Buffer)
+	bw := multipart.NewWriter(buf)
+
+	keyFile, err := os.Open("key.pem")
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+	defer keyFile.Close()
+
+	webhookUrl, _ := bw.CreateFormField("url")
+	webhookUrl.Write([]byte(webhook.Url))
+
+	cert, _ := bw.CreateFormFile("certificate", "cert.pem")
+	io.Copy(cert, keyFile)
+
+	bw.Close()
+	return
 }
